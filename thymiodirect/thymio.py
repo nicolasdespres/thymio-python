@@ -147,6 +147,7 @@ class Thymio:
         self.thymio_proxy = None
         self.variable_observers = {}
         self.user_event_listeners = {}
+        self.thread = None
 
     def connect(self, progress=None, delay=0.1):
         """Connect to Thymio or dongle.
@@ -164,7 +165,11 @@ class Thymio:
             time.sleep(delay)
 
     def disconnect(self):
+        if self.thread is None:
+            return
         self.thymio_proxy.shutdown()
+        self.thread.join()
+        self.thread = None
 
     def nodes(self):
         """Get set of ids of node currentlty connected.
